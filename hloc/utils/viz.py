@@ -48,6 +48,34 @@ def plot_images(imgs, titles=None, cmaps='gray', dpi=100, pad=.5,
             ax.set_title(titles[i])
     fig.tight_layout(pad=pad)
 
+def plot_images_vertically(imgs, titles=None, cmaps='gray', dpi=100, pad=.5,
+                adaptive=True, figsize=4.5):
+    """Plot a set of images vertically.
+    Args:
+        imgs: a list of NumPy or PyTorch images, RGB (H, W, 3) or mono (H, W).
+        titles: a list of strings, as titles for each image.
+        cmaps: colormaps for monochrome images.
+        adaptive: whether the figure size should fit the image aspect ratios.
+    """
+    n = len(imgs)
+    if not isinstance(cmaps, (list, tuple)):
+        cmaps = [cmaps] * n
+
+    if adaptive:
+        ratios = [i.shape[0] / i.shape[1] for i in imgs]  # W / H
+    else:
+        ratios = [4/3] * n
+    figsize = [figsize, sum(ratios)*figsize]
+    fig, axs = plt.subplots(
+        n, 1, figsize=figsize, dpi=dpi, gridspec_kw={'height_ratios': ratios})
+    if n == 1:
+        axs = [axs]
+    for i, (img, ax) in enumerate(zip(imgs, axs)):
+        ax.imshow(img, cmap=plt.get_cmap(cmaps[i]))
+        ax.set_axis_off()
+        if titles:
+            ax.set_title(titles[i])
+    fig.tight_layout(pad=pad)
 
 def plot_keypoints(kpts, colors='lime', ps=4):
     """Plot keypoints for existing images.

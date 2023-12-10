@@ -256,7 +256,15 @@ def main(conf: Dict,
         dataset, num_workers=1, shuffle=False, pin_memory=True)
     for idx, data in enumerate(tqdm(loader)):
         name = dataset.names[idx]
+        # print("##### data['image']  ", data['image'].shape)
+        # print(data['image'])
         pred = model({'image': data['image'].to(device, non_blocking=True)})
+        # print("##### pred['keypoints']  ", pred['keypoints'][0].shape)
+        # print(pred['keypoints'][0])
+        # print("##### pred['scores']  ", pred['scores'][0].shape)
+        # print(pred['scores'][0])
+        # print("##### pred['descriptors']  ", pred['descriptors'][0].shape)
+        # print(pred['descriptors'][0])
         pred = {k: v[0].cpu().numpy() for k, v in pred.items()}
 
         pred['image_size'] = original_size = data['original_size'][0].numpy()

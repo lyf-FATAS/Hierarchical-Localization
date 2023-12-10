@@ -4,7 +4,8 @@ import argparse
 from ... import extract_features, match_features, triangulation, logger
 from ... import pairs_from_covisibility, pairs_from_retrieval, localize_sfm
 
-TEST_SLICES = [2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+# TEST_SLICES = [2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+TEST_SLICES = [5]
 
 
 def generate_query_list(dataset, path, slice_):
@@ -74,7 +75,7 @@ def run_slice(slice_, root, outputs, num_covis, num_loc):
 
     localize_sfm.main(
         ref_sfm,
-        dataset / 'queries/*_time_queries_with_intrinsics.txt',
+        query_list,
         loc_pairs,
         features,
         loc_matches,
@@ -90,7 +91,7 @@ if __name__ == '__main__':
                         default='datasets/cmu_extended',
                         help='Path to the dataset, default: %(default)s')
     parser.add_argument('--outputs', type=Path,
-                        default='outputs/aachen_extended',
+                        default='outputs/cmu_extended',
                         help='Path to the output directory, default: %(default)s')
     parser.add_argument('--num_covis', type=int, default=20,
                         help='Number of image pairs for SfM, default: %(default)s')
@@ -98,9 +99,9 @@ if __name__ == '__main__':
                         help='Number of image pairs for loc, default: %(default)s')
     args = parser.parse_args()
 
-    if args.slice == '*':
+    if args.slices == '*':
         slices = TEST_SLICES
-    if '-' in args.slices:
+    elif '-' in args.slices:
         min_, max_ = args.slices.split('-')
         slices = list(range(int(min_), int(max_)+1))
     else:
