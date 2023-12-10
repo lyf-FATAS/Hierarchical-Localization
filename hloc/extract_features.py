@@ -256,15 +256,7 @@ def main(conf: Dict,
         dataset, num_workers=1, shuffle=False, pin_memory=True)
     for idx, data in enumerate(tqdm(loader)):
         name = dataset.names[idx]
-        # print("##### data['image']  ", data['image'].shape)
-        # print(data['image'])
         pred = model({'image': data['image'].to(device, non_blocking=True)})
-        # print("##### pred['keypoints']  ", pred['keypoints'][0].shape)
-        # print(pred['keypoints'][0])
-        # print("##### pred['scores']  ", pred['scores'][0].shape)
-        # print(pred['scores'][0])
-        # print("##### pred['descriptors']  ", pred['descriptors'][0].shape)
-        # print(pred['descriptors'][0])
         pred = {k: v[0].cpu().numpy() for k, v in pred.items()}
 
         pred['image_size'] = original_size = data['original_size'][0].numpy()
@@ -276,6 +268,21 @@ def main(conf: Dict,
                 pred['scales'] *= scales.mean()
             # add keypoint uncertainties scaled to the original resolution
             uncertainty = getattr(model, 'detection_noise', 1) * scales.mean()
+
+        # if idx == 0:
+            # print("##### data['image']  ", data['image'].shape)
+            # print(data['image'])
+            # print("##### data['original_size']  ", data['original_size'])
+            # print("##### pred:", pred.keys())
+            # pred_debug = {k: torch.from_numpy(v).unsqueeze(0).to(device, non_blocking=True) for k, v in pred.items()}
+            # print("##### pred['keypoints']  ", pred_debug['keypoints'].shape)
+            # print(pred_debug['keypoints'])
+            # print("##### pred['scores']  ", pred_debug['scores'].shape)
+            # print(pred_debug['scores'])
+            # print("##### pred['keypoint_scores']  ", pred_debug['keypoint_scores'].shape)
+            # print(pred_debug['keypoint_scores'])
+            # print("##### pred['descriptors']  ", pred_debug['descriptors'].shape)
+            # print(pred_debug['descriptors'])
 
         if as_half:
             for k in pred:
